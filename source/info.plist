@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>ai.combinatrix.alfred.agent-launcher</string>
+	<key>category</key>
+	<string>Tools</string>
+	<key>connections</key>
+	<dict>
+		<key>2F4A8739-97B8-4455-987B-15EE5D388438</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>73D3BFFD-9243-4429-A609-7B287BFC1739</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Combinatrix.ai</string>
+	<key>description</key>
+	<string>Route one Alfred prompt to Codex or Claude, in CLI or Desktop.</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Agent Launcher</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>127</integer>
+				<key>keyword</key>
+				<string>{var:keyword}</string>
+				<key>queuedelaycustom</key>
+				<integer>1</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Preparing launch options…</string>
+				<key>script</key>
+				<string>/usr/bin/python3 query.py "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Choose Codex or Claude in CLI or Desktop</string>
+				<key>title</key>
+				<string>Agent Launcher</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>2F4A8739-97B8-4455-987B-15EE5D388438</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>127</integer>
+				<key>script</key>
+				<string>/usr/bin/python3 launch.py "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>73D3BFFD-9243-4429-A609-7B287BFC1739</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Type ag followed by a prompt, then choose Codex or Claude in CLI or Desktop. Configure the keyword and optional default CLI effort below. Desktop targets prefill the prompt and wait for you to send.</string>
+	<key>uidata</key>
+	<dict>
+		<key>2F4A8739-97B8-4455-987B-15EE5D388438</key>
+		<dict>
+			<key>xpos</key>
+			<integer>50</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+		<key>73D3BFFD-9243-4429-A609-7B287BFC1739</key>
+		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+	</dict>
+	<key>userconfigurationconfig</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>ag</string>
+			</dict>
+			<key>description</key>
+			<string>Keyword used to open Agent Launcher.</string>
+			<key>label</key>
+			<string>Keyword</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>keyword</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>pairs</key>
+				<array>
+					<array><string>Model default</string><string></string></array>
+					<array><string>minimal — Codex only</string><string>minimal</string></array>
+					<array><string>low</string><string>low</string></array>
+					<array><string>medium</string><string>medium</string></array>
+					<array><string>high</string><string>high</string></array>
+					<array><string>xhigh</string><string>xhigh</string></array>
+					<array><string>max — Claude only</string><string>max</string></array>
+				</array>
+			</dict>
+			<key>description</key>
+			<string>Optional shared effort for supported CLI models. Desktop and Haiku ignore it.</string>
+			<key>label</key>
+			<string>Default CLI effort</string>
+			<key>type</key>
+			<string>popupbutton</string>
+			<key>variable</key>
+			<string>default_effort</string>
+		</dict>
+	</array>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>0.1.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/combinatrix-ai/alfred-agent-launcher</string>
+</dict>
+</plist>
