@@ -51,7 +51,13 @@ def validate_cli_request(request: dict[str, str]) -> None:
     provider = request["provider"]
     if provider not in MODEL_FAMILIES:
         raise SystemExit("Unsupported provider")
+    if request["effort"] not in ALLOWED_EFFORTS[provider]:
+        raise SystemExit("Unsupported effort")
     model = request["model"]
+    if not model:
+        if request["effort"]:
+            raise SystemExit("Default model payload cannot override effort")
+        return
     if MODEL_ID_PATTERN.fullmatch(model) is None:
         raise SystemExit("Unsupported model")
     if provider == "codex":
@@ -63,13 +69,13 @@ def validate_cli_request(request: dict[str, str]) -> None:
         )
     if not matches_family:
         raise SystemExit("Unsupported model")
-    if request["effort"] not in ALLOWED_EFFORTS[provider]:
-        raise SystemExit("Unsupported effort")
 
 
 def build_cli_command(request: dict[str, str], executable: str) -> str:
     validate_cli_request(request)
-    argv = ["exec", executable, "--model", request["model"]]
+    argv = ["exec", executable]
+    if request["model"]:
+        argv.extend(["--model", request["model"]])
     if request["effort"]:
         if request["provider"] == "codex":
             argv.extend(["-c", f'model_reasoning_effort="{request["effort"]}"'])

@@ -158,13 +158,24 @@ def _desktop_item(provider: str, prompt: str) -> dict:
     }
 
 
-def _status_item(provider: str, status: dict) -> dict:
+def _fallback_cli_item(provider: str, prompt: str, status: dict | None) -> dict:
+    product = "Codex CLI" if provider == "codex" else "Claude CLI"
+    if status and status.get("loading"):
+        subtitle_text = "Default model · refreshing model list…"
+    elif status:
+        subtitle_text = "Default model · model list unavailable"
+    else:
+        subtitle_text = "Default model"
+    if not prompt:
+        subtitle_text += " · new session"
     return {
-        "uid": f"{provider}-models-status",
-        "title": status["title"],
-        "subtitle": status["subtitle"],
-        "valid": False,
+        "uid": f"{provider}-default-cli",
+        "title": product,
+        "subtitle": subtitle_text,
+        "arg": payload(provider, "cli", "", "", prompt),
+        "valid": True,
         "icon": {"path": f"icon-{provider}.png"},
+        "text": {"copy": prompt, "largetype": prompt},
     }
 
 
@@ -179,6 +190,8 @@ def build_items(
     args = {
         "codex-desktop": payload("codex", "desktop", "", "", prompt),
         "claude-desktop": payload("claude", "desktop", "", "", prompt),
+        "codex-default-cli": payload("codex", "cli", "", "", prompt),
+        "claude-default-cli": payload("claude", "cli", "", "", prompt),
     }
     selected_by_provider = {
         provider: select_family_models(provider, models_by_provider.get(provider, []))
@@ -192,23 +205,24 @@ def build_items(
             )
 
     for provider in PROVIDERS:
-        for model in selected_by_provider[provider]:
-            uid = f"{provider}-{model['family']}-cli"
-            effort = effective_effort(provider, "cli", model["id"], requested_effort)
-            items.append(
-                {
-                    "uid": uid,
-                    "title": model["title"],
-                    "subtitle": subtitle(provider, "cli", model["id"], effort, prompt),
-                    "arg": args[uid],
-                    "valid": True,
-                    "icon": {"path": f"icon-{provider}.png"},
-                    "text": {"copy": prompt, "largetype": prompt},
-                }
-            )
+        if selected_by_provider[provider]:
+            for model in selected_by_provider[provider]:
+                uid = f"{provider}-{model['family']}-cli"
+                effort = effective_effort(provider, "cli", model["id"], requested_effort)
+                items.append(
+                    {
+                        "uid": uid,
+                        "title": model["title"],
+                        "subtitle": subtitle(provider, "cli", model["id"], effort, prompt),
+                        "arg": args[uid],
+                        "valid": True,
+                        "icon": {"path": f"icon-{provider}.png"},
+                        "text": {"copy": prompt, "largetype": prompt},
+                    }
+                )
+        else:
+            items.append(_fallback_cli_item(provider, prompt, statuses.get(provider)))
         items.append(_desktop_item(provider, prompt))
-        if provider in statuses:
-            items.append(_status_item(provider, statuses[provider]))
 
     fable_arg = args.get("claude-fable-cli")
     for item in items:
@@ -228,8 +242,10 @@ def build_items(
             }
         else:
             command_modifier = {
-                "valid": False,
-                "subtitle": "Claude models unavailable",
+                "valid": True,
+                "arg": args["claude-default-cli"],
+                "subtitle": "Claude CLI · default model"
+                + (" · new session" if not prompt else ""),
             }
         item["mods"] = {
             "cmd": command_modifier,

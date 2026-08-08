@@ -170,7 +170,7 @@ class WorkflowTests(unittest.TestCase):
             ["claude-fable-5", "claude-opus-5", "claude-haiku-4-5-20251001"],
         )
 
-    def test_partial_failure_keeps_desktop_and_other_provider(self):
+    def test_partial_failure_uses_default_cli_and_keeps_other_provider(self):
         items = query.build_items(
             "test",
             "",
@@ -189,12 +189,37 @@ class WorkflowTests(unittest.TestCase):
                 "Terra",
                 "Sol",
                 "Codex Desktop",
+                "Claude CLI",
                 "Claude Desktop",
-                "Claude models unavailable",
             ],
         )
-        self.assertFalse(items[-1]["valid"])
-        self.assertFalse(items[0]["mods"]["cmd"]["valid"])
+        fallback = items[-2]
+        self.assertTrue(fallback["valid"])
+        self.assertEqual(fallback["subtitle"], "Default model · model list unavailable")
+        self.assertEqual(self.decode(fallback["arg"])["model"], "")
+        self.assertEqual(self.decode(fallback["arg"])["effort"], "")
+        self.assertTrue(items[0]["mods"]["cmd"]["valid"])
+        self.assertEqual(self.decode(items[0]["mods"]["cmd"]["arg"])["model"], "")
+
+    def test_loading_catalogs_offer_default_cli_without_effort(self):
+        loading = {
+            provider: {
+                "title": f"Refreshing {provider} models…",
+                "subtitle": "Model choices will appear automatically",
+                "loading": True,
+            }
+            for provider in ("codex", "claude")
+        }
+        items = query.build_items("test", "high", {}, loading)
+        self.assertEqual(
+            [item["title"] for item in items],
+            ["Codex CLI", "Codex Desktop", "Claude CLI", "Claude Desktop"],
+        )
+        for item in (items[0], items[2]):
+            request = self.decode(item["arg"])
+            self.assertEqual(request["model"], "")
+            self.assertEqual(request["effort"], "")
+            self.assertEqual(item["subtitle"], "Default model · refreshing model list…")
 
     def test_model_cache_expires_after_one_day(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -223,6 +248,22 @@ class WorkflowTests(unittest.TestCase):
         }
         launch.validate_cli_request(request)
         request["model"] = "--dangerous-opus"
+        with self.assertRaises(SystemExit):
+            launch.validate_cli_request(request)
+
+    def test_default_cli_command_omits_model_and_effort(self):
+        request = {
+            "provider": "codex",
+            "surface": "cli",
+            "model": "",
+            "effort": "",
+            "prompt": "test",
+        }
+        self.assertEqual(
+            shlex.split(launch.build_cli_command(request, "/tmp/codex")),
+            ["exec", "/tmp/codex", "test"],
+        )
+        request["effort"] = "high"
         with self.assertRaises(SystemExit):
             launch.validate_cli_request(request)
 

@@ -13,8 +13,7 @@ When online, Agent Launcher refreshes available model names every 24 hours.
 Codex models come from the installed Codex CLI, and Claude models come from
 [claude-models-list](https://github.com/combinatrix-ai/claude-models-list).
 
-If a model list cannot be refreshed and no fresh cache is available, its CLI
-choices are hidden. Desktop choices remain available.
+If latest models are unavailable, Agent Launcher uses each CLI's default model.
 
 ## Install
 
