@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 - Unreleased
+
+- Discover current Codex CLI models from `codex debug models`.
+- Discover current Claude models from the public `claude-models-list` snapshot.
+- Cache successful model catalogs for 24 hours and refresh them without blocking Alfred.
+- Keep Desktop launch targets available when a CLI model catalog cannot be refreshed.
+
 ## 0.1.0 - Unreleased
 
 - Launch Codex CLI with Luna, Terra, or Sol.

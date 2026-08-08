@@ -3,6 +3,7 @@
 import base64
 import json
 from pathlib import Path
+import re
 import shlex
 import shutil
 import subprocess
@@ -10,8 +11,9 @@ import sys
 from urllib.parse import urlencode
 
 
-ALLOWED_MODELS = {
-    "codex": {"gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"},
+MODEL_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+MODEL_FAMILIES = {
+    "codex": {"luna", "terra", "sol"},
     "claude": {"fable", "opus", "haiku"},
 }
 ALLOWED_EFFORTS = {
@@ -47,9 +49,19 @@ def resolve_executable(name: str) -> str:
 
 def validate_cli_request(request: dict[str, str]) -> None:
     provider = request["provider"]
-    if provider not in ALLOWED_MODELS:
+    if provider not in MODEL_FAMILIES:
         raise SystemExit("Unsupported provider")
-    if request["model"] not in ALLOWED_MODELS[provider]:
+    model = request["model"]
+    if MODEL_ID_PATTERN.fullmatch(model) is None:
+        raise SystemExit("Unsupported model")
+    if provider == "codex":
+        matches_family = any(model.lower().endswith(f"-{family}") for family in MODEL_FAMILIES[provider])
+    else:
+        matches_family = any(
+            re.search(rf"(?:^|-){re.escape(family)}(?:-|$)", model.lower())
+            for family in MODEL_FAMILIES[provider]
+        )
+    if not matches_family:
         raise SystemExit("Unsupported model")
     if request["effort"] not in ALLOWED_EFFORTS[provider]:
         raise SystemExit("Unsupported effort")
