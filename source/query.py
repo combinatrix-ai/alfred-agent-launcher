@@ -58,16 +58,14 @@ def payload(provider: str, surface: str, model: str, effort: str, prompt: str) -
     return base64.urlsafe_b64encode(raw).decode("ascii")
 
 
-def subtitle(provider: str, surface: str, model: str, effort: str, prompt: str) -> str:
+def subtitle(provider: str, surface: str, model: str, effort: str) -> str:
     if surface == "desktop":
-        text = "Model in app · review & send"
+        text = "Model in app"
     else:
         product = "Codex CLI" if provider == "codex" else "Claude CLI"
         text = f"{product} · {model}"
         if effort:
             text += f" · {effort}"
-    if not prompt:
-        text = "Model in app · new session" if surface == "desktop" else f"{text} · new session"
     return text
 
 
@@ -150,7 +148,7 @@ def _desktop_item(provider: str, prompt: str) -> dict:
     return {
         "uid": uid,
         "title": title,
-        "subtitle": subtitle(provider, "desktop", "", "", prompt),
+        "subtitle": subtitle(provider, "desktop", "", ""),
         "arg": payload(provider, "desktop", "", "", prompt),
         "valid": True,
         "icon": {"path": f"icon-{provider}.png"},
@@ -166,8 +164,6 @@ def _fallback_cli_item(provider: str, prompt: str, status: dict | None) -> dict:
         subtitle_text = "Default model · model list unavailable"
     else:
         subtitle_text = "Default model"
-    if not prompt:
-        subtitle_text += " · new session"
     return {
         "uid": f"{provider}-default-cli",
         "title": product,
@@ -213,7 +209,7 @@ def build_items(
                     {
                         "uid": uid,
                         "title": model["title"],
-                        "subtitle": subtitle(provider, "cli", model["id"], effort, prompt),
+                        "subtitle": subtitle(provider, "cli", model["id"], effort),
                         "arg": args[uid],
                         "valid": True,
                         "icon": {"path": f"icon-{provider}.png"},
@@ -237,22 +233,20 @@ def build_items(
                     model["id"]
                     for model in selected_by_provider["claude"]
                     if model["family"] == "fable"
-                )
-                + (" · new session" if not prompt else ""),
+                ),
             }
         else:
             command_modifier = {
                 "valid": True,
                 "arg": args["claude-default-cli"],
-                "subtitle": "Claude CLI · default model"
-                + (" · new session" if not prompt else ""),
+                "subtitle": "Claude CLI · default model",
             }
         item["mods"] = {
             "cmd": command_modifier,
             "alt": {
                 "valid": True,
                 "arg": args["codex-desktop"],
-                "subtitle": "Codex Desktop · " + ("new session" if not prompt else "review & send"),
+                "subtitle": "Codex Desktop · Model in app",
             },
         }
     return items

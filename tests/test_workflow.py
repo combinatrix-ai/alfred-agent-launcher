@@ -92,21 +92,21 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(item["mods"]["cmd"]["subtitle"], "Claude CLI · claude-fable-5")
             alt = self.decode(item["mods"]["alt"]["arg"])
             self.assertEqual((alt["provider"], alt["surface"]), ("codex", "desktop"))
-            self.assertEqual(item["mods"]["alt"]["subtitle"], "Codex Desktop · review & send")
+            self.assertEqual(item["mods"]["alt"]["subtitle"], "Codex Desktop · Model in app")
 
     def test_compact_desktop_and_empty_prompt_copy(self):
         prompted = {item["title"]: item for item in query.build_items("safe", "", MODELS)}
-        self.assertEqual(prompted["Codex Desktop"]["subtitle"], "Model in app · review & send")
-        self.assertEqual(prompted["Claude Desktop"]["subtitle"], "Model in app · review & send")
+        self.assertEqual(prompted["Codex Desktop"]["subtitle"], "Model in app")
+        self.assertEqual(prompted["Claude Desktop"]["subtitle"], "Model in app")
 
         empty = {item["title"]: item for item in query.build_items("", "", MODELS)}
-        self.assertEqual(empty["Luna"]["subtitle"], "Codex CLI · gpt-5.6-luna · new session")
-        self.assertEqual(empty["Codex Desktop"]["subtitle"], "Model in app · new session")
+        self.assertEqual(empty["Luna"]["subtitle"], "Codex CLI · gpt-5.6-luna")
+        self.assertEqual(empty["Codex Desktop"]["subtitle"], "Model in app")
         self.assertEqual(
             empty["Fable"]["mods"]["cmd"]["subtitle"],
-            "Claude CLI · claude-fable-5 · new session",
+            "Claude CLI · claude-fable-5",
         )
-        self.assertEqual(empty["Fable"]["mods"]["alt"]["subtitle"], "Codex Desktop · new session")
+        self.assertEqual(empty["Fable"]["mods"]["alt"]["subtitle"], "Codex Desktop · Model in app")
 
     def test_cli_quoting_round_trip(self):
         prompt = "it's $(safe); café\nsecond line"
