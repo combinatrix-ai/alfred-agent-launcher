@@ -2,6 +2,8 @@
 
 Send one prompt to Codex or Claude, in CLI or Desktop.
 
+![Agent Launcher showing Codex and Claude launch targets in Alfred](assets/agent-launcher.jpg)
+
 Type `ag`, enter a prompt, and choose an agent. CLI targets start in Terminal;
 Desktop targets open the prompt for review before sending.
 
