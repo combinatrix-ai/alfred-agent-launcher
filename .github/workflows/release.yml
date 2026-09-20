@@ -13,6 +13,10 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
+      - name: Check release version
+        run: |
+          version=$(/usr/libexec/PlistBuddy -c "Print :version" source/info.plist)
+          test "$GITHUB_REF_NAME" = "v$version"
       - name: Build
         run: ./scripts/build.sh
       - name: Publish release

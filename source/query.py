@@ -438,7 +438,7 @@ def fetch_codex_models() -> list[dict]:
 def fetch_claude_models() -> list[dict]:
     request = Request(
         CLAUDE_MODELS_URL,
-        headers={"Accept": "application/json", "User-Agent": "alfred-agent-launcher/0.2"},
+        headers={"Accept": "application/json", "User-Agent": "alfred-agent-launcher/0.1.0"},
     )
     with urlopen(request, timeout=8) as response:
         body = response.read(2_000_001)

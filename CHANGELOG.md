@@ -1,14 +1,12 @@
 # Changelog
 
-## 0.2.0 - Unreleased
+## 0.1.0 - 2026-09-20
 
 - Keep launcher subtitles consistent regardless of whether a prompt is entered.
 - Discover current Codex CLI models from `codex debug models`.
 - Discover current Claude models from the public `claude-models-list` snapshot.
 - Cache successful model catalogs for 24 hours and refresh them without blocking Alfred.
 - Fall back to each CLI's configured default when a model catalog cannot be refreshed.
-
-## 0.1.0 - Unreleased
 
 - Launch Codex CLI with Luna, Terra, or Sol.
 - Launch Claude CLI with Fable, Opus, or Haiku.
